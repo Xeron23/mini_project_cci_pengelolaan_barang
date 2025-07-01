@@ -111,7 +111,6 @@ const destroy = async(id, item_id)=>{
         return "succesfully delete item income"
 }
 
-
 export {index, showItem, store, destroy} 
 
 

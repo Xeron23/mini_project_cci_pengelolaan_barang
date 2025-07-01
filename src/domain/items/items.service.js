@@ -99,6 +99,19 @@ const destroy = async (id) => {
         throw new ResponseError("Item not found", 404);
     }
 
+    await prisma.itemIncome.deleteMany({
+        where: {
+            item_id: id
+        }
+    });
+
+    await prisma.itemOutcome.deleteMany({
+        where: {
+            item_id: id
+        }
+    });
+
+
     const item = await prisma.item.delete({
         where: { id: idValidation },
     });
