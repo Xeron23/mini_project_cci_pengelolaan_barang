@@ -1,0 +1,364 @@
+openapi: 3.0.0
+info:
+  title: Inventory Management API
+  version: 1.0.0
+  description: API untuk sistem pengelolaan barang di toko
+
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login berhasil
+        '401':
+          description: Login gagal
+
+  /auth/refresh:
+    post:
+      summary: Refresh token JWT
+      tags: [Auth]
+      responses:
+        '200':
+          description: Token berhasil diperbarui
+
+  /auth:
+    post:
+      summary: Register user baru
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Registrasi berhasil
+
+  /auth/logout:
+    delete:
+      summary: Logout user
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout berhasil
+
+  /category:
+    get:
+      summary: Ambil semua kategori
+      tags: [Category]
+      responses:
+        '200':
+          description: Berhasil
+    post:
+      summary: Buat kategori baru
+      tags: [Category]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Berhasil
+
+  /category/{id}:
+    get:
+      summary: Ambil kategori berdasarkan ID
+      tags: [Category]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Tidak ditemukan
+
+    put:
+      summary: Update kategori berdasarkan ID
+      tags: [Category]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Berhasil
+        '404':
+          description: Tidak ditemukan
+
+    delete:
+      summary: Hapus kategori
+      tags: [Category]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Berhasil
+        '404':
+          description: Tidak ditemukan
+
+  /items:
+    get:
+      summary: Ambil semua item
+      tags: [Item]
+      responses:
+        '200':
+          description: Berhasil
+    post:
+      summary: Tambah item baru
+      tags: [Item]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                category_id:
+                  type: integer
+                current_stock:
+                  type: integer
+      responses:
+        '201':
+          description: Item berhasil dibuat
+
+  /items/{id}:
+    get:
+      summary: Ambil item berdasarkan ID
+      tags: [Item]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Tidak ditemukan
+
+    put:
+      summary: Update item berdasarkan ID
+      tags: [Item]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                category_id:
+                  type: integer
+                current_stock:
+                  type: integer
+      responses:
+        '200':
+          description: Berhasil
+        '404':
+          description: Tidak ditemukan
+
+    delete:
+      summary: Hapus item
+      tags: [Item]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Dihapus
+        '404':
+          description: Tidak ditemukan
+
+  /item-income:
+    get:
+      summary: Ambil semua pemasukan item
+      tags: [Item Income]
+      responses:
+        '200':
+          description: Berhasil
+    post:
+      summary: Tambah pemasukan item
+      tags: [Item Income]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item_id:
+                  type: integer
+                quantity:
+                  type: integer
+                unit_price:
+                  type: number
+                total_price:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                user_id:
+                  type: integer
+      responses:
+        '201':
+          description: Berhasil
+
+  /item-income/item/{id}:
+    get:
+      summary: Ambil pemasukan berdasarkan item ID
+      tags: [Item Income]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+
+  /item-income/{id}:
+    delete:
+      summary: Hapus pemasukan berdasarkan ID
+      tags: [Item Income]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Dihapus
+
+  /item-outcome:
+    get:
+      summary: Ambil semua pengeluaran item
+      tags: [Item Outcome]
+      responses:
+        '200':
+          description: Berhasil
+    post:
+      summary: Tambah pengeluaran item
+      tags: [Item Outcome]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item_id:
+                  type: integer
+                quantity:
+                  type: integer
+                reason:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Berhasil
+
+  /item-outcome/item/{id}:
+    get:
+      summary: Ambil pengeluaran berdasarkan item ID
+      tags: [Item Outcome]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: OK
+
+  /item-outcome/{id}:
+    delete:
+      summary: Hapus pengeluaran berdasarkan ID
+      tags: [Item Outcome]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Dihapus
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

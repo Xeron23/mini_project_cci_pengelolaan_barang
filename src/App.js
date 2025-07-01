@@ -8,12 +8,19 @@ import authMiddelware from "./middleware/auth-middleware.js";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middleware/error-middleware.js";
 
+// doc swagger
+import swaggerUi from "swagger-ui-express"
+import YAML from "yamljs";
+
+
 const App = e();
 
 App.use(e.json());
 App.use(cookieParser());
 App.use(e.urlencoded({ extended: true }));
 
+const swaggerDocument = YAML.load('./swagger.yaml');
+App.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 // Set up the route
