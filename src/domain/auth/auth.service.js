@@ -5,16 +5,17 @@ import {promisify} from "util"
 import validate from "../../utils/validation.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { userLogoutSchema, userSchema } from "./auth.schema.js";
+import { loginSchema, registerSchema, userLogoutSchema } from "./auth.schema.js";
 import prisma from "../../config/db.js";
 import { ResponseError } from "../../config/error.js";
+import { decode } from "punycode";
 
 // secret 
 const accessTokenSecret= '92e4c39b1338d60f0bf1e6758655a6f5f52c1d54afe52c7d860c88603ec9e5e6096b790bfde7b82246f4f27c906c5275937b2cad1ab0951d927ff2f514bc1d9c'
 const refreshTokenSecret= '09fbd8a822d60b471ae19a479d49c522f6de12a598c5dc507665167a18420faa2e82c231328690f17b8e6a0b3f4095dd142726b2fe27e180c8cb0980bf421638'
 
 const login = async(data)=>{
-        const user = validate(userSchema, data);
+        const user = validate(loginSchema, data);
 
         const checkUsername = await prisma.user.findFirst({
             where: {
@@ -37,7 +38,8 @@ const login = async(data)=>{
     
         const accessToken = jwt.sign(
             {
-                username: checkUsername.username
+                username: checkUsername.username,
+                name: checkUsername.name
             },
             accessTokenSecret || process.env.ACCESS_TOKEN_SECCRET
             , {expiresIn: '150s'}
@@ -45,7 +47,8 @@ const login = async(data)=>{
     
         const refreshToken = jwt.sign(
             {
-                username: checkUsername.username
+                username: checkUsername.username,
+                name: checkUsername.name
             },
             refreshTokenSecret || process.env.REFRESH_TOKEN_SECCRET,
             {expiresIn: '1d'}
@@ -53,7 +56,8 @@ const login = async(data)=>{
     
         return {
             data: {
-                username: checkUsername.username
+                name: checkUsername.name
+
             },
             accessToken,
             refreshToken
@@ -63,7 +67,7 @@ const login = async(data)=>{
 
 
 const register = async(data)=>{
-    const user = validate(userSchema, data);
+    const user = validate(registerSchema, data);
     
     const checkUsername = await prisma.user.findFirst({
         where: {
@@ -79,6 +83,7 @@ const register = async(data)=>{
     user.password = await bcrypt.hash(data.password, 10);
     const create = await prisma.user.create({
         data: {
+            name: user.name,
             username: user.username,
             password: user.password
         }
@@ -115,7 +120,10 @@ const refreshToken = async(token)=>{
     }
 
     const newAccessToken = jwt.sign(
-        { username: decoded.username },
+        { 
+            username: decoded.username ,
+            user: decode.name
+        },
         process.env.ACCESS_TOKEN_SECCRET,
         { expiresIn: '100s' }
     );

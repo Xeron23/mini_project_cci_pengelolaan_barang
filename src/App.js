@@ -20,7 +20,7 @@ App.use(e.urlencoded({ extended: true }));
 App.use('/api/auth', RouterAuth);
 
 // auth middleware
-// App.use(authMiddelware);
+App.use(authMiddelware);
 
 App.use("/api/category", routerCategory);
 App.use("/api/items", RouterItem)
